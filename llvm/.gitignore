@@ -71,3 +71,5 @@ bindings/go/llvm/workdir
 .sw?
 #OS X specific files.
 .DS_store
+/cmake-build-m88k-debug/
+/cmake-build-reco-debug/
