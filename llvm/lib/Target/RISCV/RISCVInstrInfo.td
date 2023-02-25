@@ -1864,3 +1864,9 @@ include "RISCVInstrInfoZicbo.td"
 
 include "RISCVInstrInfoXVentana.td"
 include "RISCVInstrInfoXTHead.td"
+
+//===----------------------------------------------------------------------===//
+// Reito extensions
+//===----------------------------------------------------------------------===//
+
+include "RISCVInstrInfoXReito.td"

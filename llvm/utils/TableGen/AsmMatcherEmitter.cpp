@@ -613,6 +613,9 @@ struct MatchableInfo {
 
   /// operator< - Compare two matchables.
   bool operator<(const MatchableInfo &RHS) const {
+    if (TheDef->isSubClassOf("RVInstCustom"))
+      return true;
+
     // The primary comparator is the instruction mnemonic.
     if (int Cmp = Mnemonic.compare_insensitive(RHS.Mnemonic))
       return Cmp == -1;

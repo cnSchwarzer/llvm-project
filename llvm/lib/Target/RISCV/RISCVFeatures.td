@@ -463,6 +463,13 @@ def HasVendorXTHeadVdot : Predicate<"Subtarget->hasVendorXTHeadVdot()">,
                                     AssemblerPredicate<(all_of FeatureVendorXTHeadVdot),
                                     "'xtheadvdot' (T-Head Vector Extensions for Dot)">;
 
+def FeatureVendorXReito
+    : SubtargetFeature<"xreito", "HasVendorXReito", "true",
+                       "'xreito' (Reito Extensions common)">;
+def HasVendorXReito : Predicate<"Subtarget->hasVendorXReito()">,
+                                    AssemblerPredicate<(all_of FeatureVendorXReito),
+                                    "'xreito' (Reito Extensions common)">;
+
 //===----------------------------------------------------------------------===//
 // LLVM specific features and extensions
 //===----------------------------------------------------------------------===//

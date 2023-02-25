@@ -683,7 +683,7 @@ class Instruction : InstructionEncoding {
   /// HasPositionOrder: Indicate tablegen to sort the instructions by record
   /// ID, so that instruction that is defined earlier can be sorted earlier
   /// in the assembly matching table.
-  bit HasPositionOrder = false;
+  bit HasPositionOrder = false;  
 }
 
 /// Defines a Pat match between compressed and uncompressed instruction.
