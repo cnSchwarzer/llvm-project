@@ -463,12 +463,21 @@ def HasVendorXTHeadVdot : Predicate<"Subtarget->hasVendorXTHeadVdot()">,
                                     AssemblerPredicate<(all_of FeatureVendorXTHeadVdot),
                                     "'xtheadvdot' (T-Head Vector Extensions for Dot)">;
 
-def FeatureVendorXReito
-    : SubtargetFeature<"xreito", "HasVendorXReito", "true",
-                       "'xreito' (Reito Extensions common)">;
-def HasVendorXReito : Predicate<"Subtarget->hasVendorXReito()">,
-                                    AssemblerPredicate<(all_of FeatureVendorXReito),
-                                    "'xreito' (Reito Extensions common)">;
+// These can be used in RoCC
+def FeatureVendorXReitoR
+    : SubtargetFeature<"xreitor", "HasVendorXReitoR", "true",
+                       "'xreitor' (Reito Extensions Rocket Chip RoCC)">;
+def HasVendorXReitoR : Predicate<"Subtarget->hasVendorXReitoR()">,
+                                    AssemblerPredicate<(all_of FeatureVendorXReitoR),
+                                    "'xreitor' (Reito Extensions Rocket Chip RoCC)">;
+
+// These can be used in QEMU
+def FeatureVendorXReitoQ
+    : SubtargetFeature<"xreitoq", "HasVendorXReitoQ", "true",
+                       "'xreitoq' (Reito Extensions QEMU)">;
+def HasVendorXReitoQ : Predicate<"Subtarget->hasVendorXReitoQ()">,
+                                    AssemblerPredicate<(all_of FeatureVendorXReitoQ),
+                                    "'xreitoq' (Reito Extensions QEMU)">;
 
 //===----------------------------------------------------------------------===//
 // LLVM specific features and extensions

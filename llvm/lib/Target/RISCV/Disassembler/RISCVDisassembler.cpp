@@ -434,11 +434,44 @@ DecodeStatus RISCVDisassembler::getInstruction(MCInst &MI, uint64_t &Size,
                                                raw_ostream &CS) const {
   // TODO: This will need modification when supporting instruction set
   // extensions with instructions > 32-bits (up to 176 bits wide).
-  uint32_t Insn;
+  uint64_t Insn;
   DecodeStatus Result;
 
+  // Reito modify this to support decode long insts.
+  if ((Bytes[0] & 0b1111111) == 0b0111111) {
+    if (Bytes.size() < 8) {
+      Size = 0;
+      return MCDisassembler::Fail;
+    }
+    Insn = support::endian::read64le(Bytes.data());
+    if (STI.getFeatureBits()[RISCV::FeatureVendorXReitoQ]) {
+      LLVM_DEBUG(dbgs() << "Trying ReitoQ table:\n");
+      Result = decodeInstruction(DecoderTableReitoQ48, MI, Insn, Address, this,
+                                 STI);
+      if (Result != MCDisassembler::Fail) {
+        Size = 8;
+        return Result;
+      }
+    }
+  }
+  else if ((Bytes[0] & 0b111111) == 0b011111) {
+    if (Bytes.size() < 6) {
+      Size = 0;
+      return MCDisassembler::Fail;
+    }
+    Insn = support::endian::read64le(Bytes.data());
+    if (STI.getFeatureBits()[RISCV::FeatureVendorXReitoQ]) {
+      LLVM_DEBUG(dbgs() << "Trying ReitoQ table:\n");
+      Result = decodeInstruction(DecoderTableReitoQ48, MI, Insn, Address, this,
+                                 STI);
+      if (Result != MCDisassembler::Fail) {
+        Size = 6;
+        return Result;
+      }
+    }
+  }
   // It's a 32 bit instruction if bit 0 and 1 are 1.
-  if ((Bytes[0] & 0x3) == 0x3) {
+  else if ((Bytes[0] & 0x3) == 0x3) {
     if (Bytes.size() < 4) {
       Size = 0;
       return MCDisassembler::Fail;

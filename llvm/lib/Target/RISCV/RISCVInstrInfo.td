@@ -1869,4 +1869,5 @@ include "RISCVInstrInfoXTHead.td"
 // Reito extensions
 //===----------------------------------------------------------------------===//
 
-include "RISCVInstrInfoXReito.td"
+include "RISCVInstrInfoXReitoQ.td"
+include "RISCVInstrInfoXReitoR.td"

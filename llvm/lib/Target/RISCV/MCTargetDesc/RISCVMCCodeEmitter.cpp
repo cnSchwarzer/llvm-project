@@ -217,6 +217,18 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
     support::endian::write(OS, Bits, support::little);
     break;
   }
+  // Reito modified here to support larger inst size
+  case 6: {
+    uint64_t Bits = getBinaryCodeForInstr(MI, Fixups, STI);
+    uint64_t BitsLE = support::endian::read64(&Bits, support::little);
+    OS.write(reinterpret_cast<const char *>(&BitsLE), 6);
+    break;
+  }
+  case 8: {
+    uint64_t Bits = getBinaryCodeForInstr(MI, Fixups, STI);
+    support::endian::write(OS, Bits, support::little);
+    break;
+  }
   }
 
   ++MCNumEmitted; // Keep track of the # of mi's emitted.
