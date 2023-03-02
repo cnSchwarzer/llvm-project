@@ -29,14 +29,14 @@ class ReitoQPatGprUimmLog2XLen<SDPatternOperator OpNode, RVInstReitoQ Inst>
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 let isReMaterializable = 1, isAsCheapAsAMove = 1 in
-def ReitoQ_LUI : RVInstReitoQRawUJ<100, (outs GPR:$rd), (ins uimm20_lui:$imm20),
+def ReitoQ_LUI : RVInstReitoQRawU<100, (outs GPR:$rd), (ins uimm20_lui:$imm20),
                   "rq.lui", "$rd, $imm20">, Sched<[WriteIALU]>;
 
-def ReitoQ_AUIPC : RVInstReitoQRawUJ<101, (outs GPR:$rd), (ins uimm20_auipc:$imm20),
+def ReitoQ_AUIPC : RVInstReitoQRawU<101, (outs GPR:$rd), (ins uimm20_auipc:$imm20),
                     "rq.auipc", "$rd, $imm20">, Sched<[WriteIALU]>;
 
 let isCall = 1 in
-def ReitoQ_JAL : RVInstReitoQRawUJ<102, (outs GPR:$rd), (ins simm21_lsb0_jal:$imm20),
+def ReitoQ_JAL : RVInstReitoQRawJ<102, (outs GPR:$rd), (ins simm21_lsb0_jal:$imm20),
                   "rq.jal", "$rd, $imm20">, Sched<[WriteJal]>;
 
 let isCall = 1 in
@@ -240,7 +240,7 @@ def : ReitoQPatGprSimm12<setult, ReitoQ_SLTIU>;
 /// Branches and jumps
 
 // Match `riscv_brcc` and lower to the appropriate RISC-V branch instruction.
-multiclass ReitoQBccPat<CondCode Cond, RVInstReitoQRawSB Inst> {
+multiclass ReitoQBccPat<CondCode Cond, RVInstReitoQRawB Inst> {
   def : ReitoQPat<(riscv_brcc GPR:$rs1, GPR:$rs2, Cond, bb:$imm12),
             (Inst GPR:$rs1, GPR:$rs2, simm13_lsb0:$imm12)>;
   // Explicitly select 0 to X0. The register coalescer doesn't always do it.
@@ -255,11 +255,17 @@ defm : ReitoQBccPat<SETGE, ReitoQ_BGE>;
 defm : ReitoQBccPat<SETULT, ReitoQ_BLTU>;
 defm : ReitoQBccPat<SETUGE, ReitoQ_BGEU>;
 
-/// Loads
+/// Loads Stores
 
 multiclass ReitoQLdPat<PatFrag LoadOp, RVInstReitoQ Inst, ValueType vt = XLenVT> {
   def : ReitoQPat<(vt (LoadOp (AddrRegImm GPR:$rs1, simm12:$imm12))),
             (Inst GPR:$rs1, simm12:$imm12)>;
+}
+
+multiclass ReitoQStPat<PatFrag StoreOp, RVInstReitoQ Inst, RegisterClass StTy,
+                 ValueType vt> {
+  def : ReitoQPat<(StoreOp (vt StTy:$rs2), (AddrRegImm GPR:$rs1, simm12:$imm12)),
+            (Inst StTy:$rs2, GPR:$rs1, simm12:$imm12)>;
 }
 
 defm : ReitoQLdPat<sextloadi8, ReitoQ_LB>;
@@ -268,14 +274,6 @@ defm : ReitoQLdPat<sextloadi16, ReitoQ_LH>;
 defm : ReitoQLdPat<extloadi16, ReitoQ_LH>;
 defm : ReitoQLdPat<zextloadi8, ReitoQ_LBU>;
 defm : ReitoQLdPat<zextloadi16, ReitoQ_LHU>;
-
-/// Stores
-
-multiclass ReitoQStPat<PatFrag StoreOp, RVInstReitoQ Inst, RegisterClass StTy,
-                 ValueType vt> {
-  def : ReitoQPat<(StoreOp (vt StTy:$rs2), (AddrRegImm GPR:$rs1, simm12:$imm12)),
-            (Inst StTy:$rs2, GPR:$rs1, simm12:$imm12)>;
-}
 
 defm : ReitoQStPat<truncstorei8, ReitoQ_SB, GPR, XLenVT>;
 defm : ReitoQStPat<truncstorei16, ReitoQ_SH, GPR, XLenVT>;

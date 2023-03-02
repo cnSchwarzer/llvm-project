@@ -8,7 +8,8 @@ class RVInstReitoQ : Instruction {
 }
 
 // Since these are still draft, implement here.
-class RVInst48<dag outs, dag ins, string opcodestr, string argstr, list<dag> pattern>
+class RVInst48<dag outs, dag ins, string opcodestr, string argstr,
+                list<dag> pattern, InstFormat format>
     : RVInstReitoQ {
   field bits<48> Inst;
   // SoftFail is a field the disassembler can use to provide a way for
@@ -26,9 +27,12 @@ class RVInst48<dag outs, dag ins, string opcodestr, string argstr, list<dag> pat
   let Pattern = pattern;
 
   let Inst{5-0} = 0b011111;
+
+  let TSFlags{4-0} = format.Value;
 }
 
-class RVInst64<dag outs, dag ins, string opcodestr, string argstr, list<dag> pattern>
+class RVInst64<dag outs, dag ins, string opcodestr, string argstr,
+                list<dag> pattern, InstFormat format>
     : RVInstReitoQ {
   field bits<64> Inst;
   // SoftFail is a field the disassembler can use to provide a way for
@@ -46,6 +50,8 @@ class RVInst64<dag outs, dag ins, string opcodestr, string argstr, list<dag> pat
   let Pattern = pattern;
 
   let Inst{6-0} = 0b0111111;
+
+  let TSFlags{4-0} = format.Value;
 }
 }
 
@@ -55,79 +61,123 @@ class RVInst64<dag outs, dag ins, string opcodestr, string argstr, list<dag> pat
 
 let Predicates = [HasVendorXReitoQ] in {
 class RVInstReitoQRawR<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, []> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatR> {
   bits<5> rs2;
   bits<5> rs1;
   bits<5> rd;
 
-  let Inst{47-32} = 0;
-  let Inst{31-27} = rs2;
-  let Inst{26-22} = rs1;
-  let Inst{21-17} = rd;
-  let Inst{16-6} = opcode;
+  let Inst{47-37} = opcode;
+  let Inst{36-22} = 0;
+  let Inst{21-17} = rs2;
+  let Inst{16-12} = rs1;
+  let Inst{11} = 0;
+  let Inst{10-6} = rd;
 }
 
 class RVInstReitoQRawI<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, []> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI> {
   bits<12> imm12;
   bits<5> rs1;
   bits<5> rd;
 
-  let Inst{47-39} = 0;
-  let Inst{38-27} = imm12;
-  let Inst{26-22} = rs1;
-  let Inst{21-17} = rd;
-  let Inst{16-6} = opcode;
+  let Inst{47-37} = opcode;
+  let Inst{36-32} = 0;
+  let Inst{31-20} = imm12;
+  let Inst{19-17} = 0;
+  let Inst{16-12} = rs1;
+  let Inst{11} = 0;
+  let Inst{10-6} = rd;
 }
 
 class RVInstReitoQRawIShift<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, []> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI> {
   bits<6> shamt; // Shift amount, in case you forgot it.
   bits<5> rs1;
   bits<5> rd;
 
-  let Inst{47-33} = 0;
-  let Inst{32-27} = shamt;
-  let Inst{26-22} = rs1;
-  let Inst{21-17} = rd;
-  let Inst{16-6} = opcode;
+  let Inst{47-37} = opcode;
+  let Inst{36-26} = 0;
+  let Inst{25-20} = shamt;
+  let Inst{19-17} = 0;
+  let Inst{16-12} = rs1;
+  let Inst{11} = 0;
+  let Inst{10-6} = rd;
 }
 
 class RVInstReitoQRawIShiftW<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, []> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI> {
   bits<5> shamt; // Shift amount, in case you forgot it.
   bits<5> rs1;
   bits<5> rd;
 
-  let Inst{47-32} = 0;
-  let Inst{31-27} = shamt;
-  let Inst{26-22} = rs1;
-  let Inst{21-17} = rd;
-  let Inst{16-6} = opcode;
+  let Inst{47-37} = opcode;
+  let Inst{36-25} = 0;
+  let Inst{24-20} = shamt;
+  let Inst{19-17} = 0;
+  let Inst{16-12} = rs1;
+  let Inst{11} = 0;
+  let Inst{10-6} = rd;
 }
 
-class RVInstReitoQRawSB<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, []> {
+class RVInstReitoQRawS<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatS> {
   bits<12> imm12;
   bits<5> rs2;
   bits<5> rs1;
 
-  let Inst{47-39} = 0;
-  let Inst{38-27} = imm12;
-  let Inst{26-22} = rs2;
-  let Inst{21-17} = rs1;
-  let Inst{16-6} = opcode;
+  let Inst{47-37} = opcode;
+  let Inst{36-32} = 0;
+  let Inst{31-25} = imm12{11-5};
+  let Inst{24-22} = 0;
+  let Inst{21-17} = rs2;
+  let Inst{16-12} = rs1;
+  let Inst{11-7} = imm12{4-0};
+  let Inst{6} = 0;
 }
 
-class RVInstReitoQRawUJ<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, []> {
+class RVInstReitoQRawB<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatB> {
+  bits<12> imm12;
+  bits<5> rs2;
+  bits<5> rs1;
+
+  let Inst{47-37} = opcode;
+  let Inst{36-32} = 0;
+  let Inst{31} = imm12{11};
+  let Inst{30-25} = imm12{9-4};
+  let Inst{24-22} = 0;
+  let Inst{21-17} = rs2;
+  let Inst{16-12} = rs1;
+  let Inst{11-8} = imm12{3-0};
+  let Inst{7} = imm12{10};
+  let Inst{6} = 0;
+}
+
+class RVInstReitoQRawU<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatU> {
   bits<20> imm20;
   bits<5> rd;
 
-  let Inst{47-42} = 0;
-  let Inst{41-22} = imm20;
-  let Inst{21-17} = rd;
-  let Inst{16-6} = opcode;
+  let Inst{47-37} = opcode;
+  let Inst{36-32} = 0;
+  let Inst{31-12} = imm20;
+  let Inst{11} = 0;
+  let Inst{10-6} = rd;
+}
+
+class RVInstReitoQRawJ<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatJ> {
+  bits<20> imm20;
+  bits<5> rd;
+
+  let Inst{47-37} = opcode;
+  let Inst{36-32} = 0;
+  let Inst{31} = imm20{19};
+  let Inst{30-21} = imm20{9-0};
+  let Inst{20} = imm20{10};
+  let Inst{19-12} = imm20{18-11};
+  let Inst{11} = 0;
+  let Inst{10-6} = rd;
 }
 }
 
@@ -139,7 +189,7 @@ let Predicates = [HasVendorXReitoQ] in {
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
 class RvInstReitoQBranchCC<bits<11> opcode, string opcodestr>
-    : RVInstReitoQRawSB<opcode, (outs),
+    : RVInstReitoQRawB<opcode, (outs),
               (ins GPR:$rs1, GPR:$rs2, simm13_lsb0:$imm12),
               opcodestr, "$rs1, $rs2, $imm12">,
       Sched<[WriteJmp, ReadJmp, ReadJmp]> {
@@ -154,7 +204,7 @@ class RvInstReitoQLoadRI<bits<11> opcode, string opcodestr>
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 1 in
 class RvInstReitoQStoreRRI<bits<11> opcode, string opcodestr>
-    : RVInstReitoQRawSB<opcode, (outs),
+    : RVInstReitoQRawS<opcode, (outs),
               (ins GPR:$rs2, GPRMem:$rs1, simm12:$imm12),
               opcodestr, "$rs2, ${imm12}(${rs1})">;
 
