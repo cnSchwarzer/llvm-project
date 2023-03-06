@@ -11,6 +11,7 @@ add_llvm_component_library(LLVMRISCVDesc
   RISCVMatInt.cpp
   RISCVTargetStreamer.cpp
   RISCVELFStreamer.cpp
+  RISCVReitoDesc.cpp
 
   LINK_COMPONENTS
   MC

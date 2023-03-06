@@ -2,6 +2,18 @@
 // Instruction generics
 //===----------------------------------------------------------------------===//
 
+class ReitoFormat<bits<5> val> {
+  bits<5> Value = val;
+}
+def ReitoFormatInvalid : ReitoFormat<0>;
+def ReitoFormatR       : ReitoFormat<1>;
+def ReitoFormatI       : ReitoFormat<2>;
+def ReitoFormatIS      : ReitoFormat<3>;
+def ReitoFormatS       : ReitoFormat<4>;
+def ReitoFormatB       : ReitoFormat<5>;
+def ReitoFormatU       : ReitoFormat<6>;
+def ReitoFormatJ       : ReitoFormat<7>;
+
 let Predicates = [HasVendorXReitoQ] in {
 class RVInstReitoQ : Instruction {
   let DecoderNamespace = "ReitoQ";
@@ -9,7 +21,7 @@ class RVInstReitoQ : Instruction {
 
 // Since these are still draft, implement here.
 class RVInst48<dag outs, dag ins, string opcodestr, string argstr,
-                list<dag> pattern, InstFormat format>
+                list<dag> pattern, InstFormat format, ReitoFormat reitoFormat>
     : RVInstReitoQ {
   field bits<48> Inst;
   // SoftFail is a field the disassembler can use to provide a way for
@@ -29,10 +41,11 @@ class RVInst48<dag outs, dag ins, string opcodestr, string argstr,
   let Inst{5-0} = 0b011111;
 
   let TSFlags{4-0} = format.Value;
+  let TSFlags{63-59} = reitoFormat.Value;
 }
 
 class RVInst64<dag outs, dag ins, string opcodestr, string argstr,
-                list<dag> pattern, InstFormat format>
+                list<dag> pattern, InstFormat format, ReitoFormat reitoFormat>
     : RVInstReitoQ {
   field bits<64> Inst;
   // SoftFail is a field the disassembler can use to provide a way for
@@ -52,6 +65,7 @@ class RVInst64<dag outs, dag ins, string opcodestr, string argstr,
   let Inst{6-0} = 0b0111111;
 
   let TSFlags{4-0} = format.Value;
+  let TSFlags{63-59} = reitoFormat.Value;
 }
 }
 
@@ -61,7 +75,7 @@ class RVInst64<dag outs, dag ins, string opcodestr, string argstr,
 
 let Predicates = [HasVendorXReitoQ] in {
 class RVInstReitoQRawR<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatR> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatR, ReitoFormatR> {
   bits<5> rs2;
   bits<5> rs1;
   bits<5> rd;
@@ -75,7 +89,7 @@ class RVInstReitoQRawR<bits<11> opcode, dag outs, dag ins, string opcodestr, str
 }
 
 class RVInstReitoQRawI<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI, ReitoFormatI> {
   bits<12> imm12;
   bits<5> rs1;
   bits<5> rd;
@@ -90,7 +104,7 @@ class RVInstReitoQRawI<bits<11> opcode, dag outs, dag ins, string opcodestr, str
 }
 
 class RVInstReitoQRawIShift<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI, ReitoFormatIS> {
   bits<6> shamt; // Shift amount, in case you forgot it.
   bits<5> rs1;
   bits<5> rd;
@@ -105,7 +119,7 @@ class RVInstReitoQRawIShift<bits<11> opcode, dag outs, dag ins, string opcodestr
 }
 
 class RVInstReitoQRawIShiftW<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatI, ReitoFormatIS> {
   bits<5> shamt; // Shift amount, in case you forgot it.
   bits<5> rs1;
   bits<5> rd;
@@ -120,7 +134,7 @@ class RVInstReitoQRawIShiftW<bits<11> opcode, dag outs, dag ins, string opcodest
 }
 
 class RVInstReitoQRawS<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatS> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatS, ReitoFormatS> {
   bits<12> imm12;
   bits<5> rs2;
   bits<5> rs1;
@@ -136,7 +150,7 @@ class RVInstReitoQRawS<bits<11> opcode, dag outs, dag ins, string opcodestr, str
 }
 
 class RVInstReitoQRawB<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatB> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatB, ReitoFormatB> {
   bits<12> imm12;
   bits<5> rs2;
   bits<5> rs1;
@@ -154,7 +168,7 @@ class RVInstReitoQRawB<bits<11> opcode, dag outs, dag ins, string opcodestr, str
 }
 
 class RVInstReitoQRawU<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatU> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatU, ReitoFormatU> {
   bits<20> imm20;
   bits<5> rd;
 
@@ -166,7 +180,7 @@ class RVInstReitoQRawU<bits<11> opcode, dag outs, dag ins, string opcodestr, str
 }
 
 class RVInstReitoQRawJ<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatJ> {
+    : RVInst48<outs, ins, opcodestr, argstr, [], InstFormatJ, ReitoFormatJ> {
   bits<20> imm20;
   bits<5> rd;
 
