@@ -130,6 +130,15 @@ enum {
 };
 
 // Helper functions to read TSFlags.
+/// \returns the reito format of the instruction.
+static inline unsigned getReitoFormat(uint64_t TSFlags) {
+  return (TSFlags >> 59) & 0b11111;
+}
+/// \returns the reito format of the instruction.
+static inline uint32_t getReitoInst(uint64_t TSFlags) {
+  return (TSFlags >> 48) & 0x7ff;
+}
+
 /// \returns the format of the instruction.
 static inline unsigned getFormat(uint64_t TSFlags) {
   return (TSFlags & InstFormatMask) >> InstFormatShift;

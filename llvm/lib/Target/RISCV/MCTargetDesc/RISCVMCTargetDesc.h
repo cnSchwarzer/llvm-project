@@ -28,6 +28,8 @@ class MCRegisterInfo;
 class MCSubtargetInfo;
 class Target;
 
+MCInstrInfo *createRISCVMCInstrInfo();
+
 MCCodeEmitter *createRISCVMCCodeEmitter(const MCInstrInfo &MCII,
                                         MCContext &Ctx);
 

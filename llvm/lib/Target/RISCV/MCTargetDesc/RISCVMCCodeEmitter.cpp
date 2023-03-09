@@ -10,6 +10,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "RISCVReitoDesc.h"
 #include "MCTargetDesc/RISCVBaseInfo.h"
 #include "MCTargetDesc/RISCVFixupKinds.h"
 #include "MCTargetDesc/RISCVMCExpr.h"
@@ -221,11 +222,13 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
   case 6: {
     uint64_t Bits = getBinaryCodeForInstr(MI, Fixups, STI);
     uint64_t BitsLE = support::endian::read64(&Bits, support::little);
+    reito::RISCVReitoDesc::get()->replaceOpcode(MI, BitsLE);
     OS.write(reinterpret_cast<const char *>(&BitsLE), 6);
     break;
   }
   case 8: {
     uint64_t Bits = getBinaryCodeForInstr(MI, Fixups, STI);
+    reito::RISCVReitoDesc::get()->replaceOpcode(MI, Bits);
     support::endian::write(OS, Bits, support::little);
     break;
   }

@@ -41,6 +41,7 @@
 #include "llvm/Support/StringSaver.h"
 #include "llvm/Support/VirtualFileSystem.h"
 #include "llvm/Support/raw_ostream.h"
+
 #include <cstdlib>
 #include <optional>
 #include <string>
@@ -2672,6 +2673,7 @@ static void initCommonOptions() {
   initWithColorOptions();
   initDebugOptions();
   initRandomSeedOptions();
+  initReitoOptions();
 }
 
 OptionCategory &cl::getGeneralCategory() {

@@ -44,7 +44,7 @@
 
 using namespace llvm;
 
-static MCInstrInfo *createRISCVMCInstrInfo() {
+MCInstrInfo *llvm::createRISCVMCInstrInfo() {
   MCInstrInfo *X = new MCInstrInfo();
   InitRISCVMCInstrInfo(X);
   return X;

@@ -29,97 +29,97 @@ class ReitoQPatGprUimmLog2XLen<SDPatternOperator OpNode, RVInstReitoQ Inst>
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 let isReMaterializable = 1, isAsCheapAsAMove = 1 in
-def ReitoQ_LUI : RVInstReitoQRawU<100, (outs GPR:$rd), (ins uimm20_lui:$imm20),
+def ReitoQ_LUI : RVInstReitoQRawU<0, (outs GPR:$rd), (ins uimm20_lui:$imm20),
                   "rq.lui", "$rd, $imm20">, Sched<[WriteIALU]>;
 
-def ReitoQ_AUIPC : RVInstReitoQRawU<101, (outs GPR:$rd), (ins uimm20_auipc:$imm20),
+def ReitoQ_AUIPC : RVInstReitoQRawU<1, (outs GPR:$rd), (ins uimm20_auipc:$imm20),
                     "rq.auipc", "$rd, $imm20">, Sched<[WriteIALU]>;
 
 let isCall = 1 in
-def ReitoQ_JAL : RVInstReitoQRawJ<102, (outs GPR:$rd), (ins simm21_lsb0_jal:$imm20),
+def ReitoQ_JAL : RVInstReitoQRawJ<2, (outs GPR:$rd), (ins simm21_lsb0_jal:$imm20),
                   "rq.jal", "$rd, $imm20">, Sched<[WriteJal]>;
 
 let isCall = 1 in
-def ReitoQ_JALR : RVInstReitoQRawI<103, (outs GPR:$rd),
+def ReitoQ_JALR : RVInstReitoQRawI<3, (outs GPR:$rd),
                    (ins GPR:$rs1, simm12:$imm12),
                    "rq.jalr", "$rd, ${imm12}(${rs1})">,
            Sched<[WriteJalr, ReadJalr]>;
 } // hasSideEffects = 0, mayLoad = 0, mayStore = 0
 
-def ReitoQ_BEQ  : RvInstReitoQBranchCC<104, "rq.beq">;
-def ReitoQ_BNE  : RvInstReitoQBranchCC<105, "rq.bne">;
-def ReitoQ_BLT  : RvInstReitoQBranchCC<106, "rq.blt">;
-def ReitoQ_BGE  : RvInstReitoQBranchCC<107, "rq.bge">;
-def ReitoQ_BLTU : RvInstReitoQBranchCC<108, "rq.bltu">;
-def ReitoQ_BGEU : RvInstReitoQBranchCC<109, "rq.bgeu">;
+def ReitoQ_BEQ  : RvInstReitoQBranchCC<4, "rq.beq">;
+def ReitoQ_BNE  : RvInstReitoQBranchCC<5, "rq.bne">;
+def ReitoQ_BLT  : RvInstReitoQBranchCC<6, "rq.blt">;
+def ReitoQ_BGE  : RvInstReitoQBranchCC<7, "rq.bge">;
+def ReitoQ_BLTU : RvInstReitoQBranchCC<8, "rq.bltu">;
+def ReitoQ_BGEU : RvInstReitoQBranchCC<9, "rq.bgeu">;
 
-def ReitoQ_LB  : RvInstReitoQLoadRI<110, "rq.lb">, Sched<[WriteLDB, ReadMemBase]>;
-def ReitoQ_LH  : RvInstReitoQLoadRI<111, "rq.lh">, Sched<[WriteLDH, ReadMemBase]>;
-def ReitoQ_LW  : RvInstReitoQLoadRI<112, "rq.lw">, Sched<[WriteLDW, ReadMemBase]>;
-def ReitoQ_LBU : RvInstReitoQLoadRI<113, "rq.lbu">, Sched<[WriteLDB, ReadMemBase]>;
-def ReitoQ_LHU : RvInstReitoQLoadRI<114, "rq.lhu">, Sched<[WriteLDH, ReadMemBase]>;
+def ReitoQ_LB  : RvInstReitoQLoadRI<10, "rq.lb">, Sched<[WriteLDB, ReadMemBase]>;
+def ReitoQ_LH  : RvInstReitoQLoadRI<11, "rq.lh">, Sched<[WriteLDH, ReadMemBase]>;
+def ReitoQ_LW  : RvInstReitoQLoadRI<12, "rq.lw">, Sched<[WriteLDW, ReadMemBase]>;
+def ReitoQ_LBU : RvInstReitoQLoadRI<13, "rq.lbu">, Sched<[WriteLDB, ReadMemBase]>;
+def ReitoQ_LHU : RvInstReitoQLoadRI<14, "rq.lhu">, Sched<[WriteLDH, ReadMemBase]>;
 
-def ReitoQ_SB : RvInstReitoQStoreRRI<115, "rq.sb">, Sched<[WriteSTB, ReadStoreData, ReadMemBase]>;
-def ReitoQ_SH : RvInstReitoQStoreRRI<116, "rq.sh">, Sched<[WriteSTH, ReadStoreData, ReadMemBase]>;
-def ReitoQ_SW : RvInstReitoQStoreRRI<117, "rq.sw">, Sched<[WriteSTW, ReadStoreData, ReadMemBase]>;
+def ReitoQ_SB : RvInstReitoQStoreRRI<15, "rq.sb">, Sched<[WriteSTB, ReadStoreData, ReadMemBase]>;
+def ReitoQ_SH : RvInstReitoQStoreRRI<16, "rq.sh">, Sched<[WriteSTH, ReadStoreData, ReadMemBase]>;
+def ReitoQ_SW : RvInstReitoQStoreRRI<17, "rq.sw">, Sched<[WriteSTW, ReadStoreData, ReadMemBase]>;
 
 // ALU_RIs
 let isReMaterializable = 1, isAsCheapAsAMove = 1 in {
-def ReitoQ_ADDI  : RvInstReitoQAluRI<118, "rq.addi">;
-def ReitoQ_XORI  : RvInstReitoQAluRI<119, "rq.xori">;
-def ReitoQ_ORI   : RvInstReitoQAluRI<120, "rq.ori">;
+def ReitoQ_ADDI  : RvInstReitoQAluRI<18, "rq.addi">;
+def ReitoQ_XORI  : RvInstReitoQAluRI<19, "rq.xori">;
+def ReitoQ_ORI   : RvInstReitoQAluRI<20, "rq.ori">;
 }
-def ReitoQ_SLTI  : RvInstReitoQAluRI<121, "rq.slti">;
-def ReitoQ_SLTIU : RvInstReitoQAluRI<122, "rq.sltiu">;
-def ReitoQ_ANDI  : RvInstReitoQAluRI<123, "rq.andi">;
+def ReitoQ_SLTI  : RvInstReitoQAluRI<21, "rq.slti">;
+def ReitoQ_SLTIU : RvInstReitoQAluRI<22, "rq.sltiu">;
+def ReitoQ_ANDI  : RvInstReitoQAluRI<23, "rq.andi">;
 
-def ReitoQ_SLLI : RvInstReitoQShiftRI<124, "rq.slli">;
-def ReitoQ_SRLI : RvInstReitoQShiftRI<125, "rq.srli">;
-def ReitoQ_SRAI : RvInstReitoQShiftRI<126, "rq.srai">;
+def ReitoQ_SLLI : RvInstReitoQShiftRI<24, "rq.slli">;
+def ReitoQ_SRLI : RvInstReitoQShiftRI<25, "rq.srli">;
+def ReitoQ_SRAI : RvInstReitoQShiftRI<26, "rq.srai">;
 
-def ReitoQ_ADD  : RvInstReitoQAluRR<127, "rq.add", true>,
+def ReitoQ_ADD  : RvInstReitoQAluRR<27, "rq.add", true>,
                  Sched<[WriteIALU, ReadIALU, ReadIALU]>;
-def ReitoQ_SUB  : RvInstReitoQAluRR<128, "rq.sub">,
+def ReitoQ_SUB  : RvInstReitoQAluRR<28, "rq.sub">,
                  Sched<[WriteIALU, ReadIALU, ReadIALU]>;
-def ReitoQ_XOR  : RvInstReitoQAluRR<129, "rq.xor", true>,
+def ReitoQ_XOR  : RvInstReitoQAluRR<29, "rq.xor", true>,
                  Sched<[WriteIALU, ReadIALU, ReadIALU]>;
-def ReitoQ_OR   : RvInstReitoQAluRR<130, "rq.or", true>,
+def ReitoQ_OR   : RvInstReitoQAluRR<30, "rq.or", true>,
                  Sched<[WriteIALU, ReadIALU, ReadIALU]>;
-def ReitoQ_AND  : RvInstReitoQAluRR<131, "rq.and", true>,
+def ReitoQ_AND  : RvInstReitoQAluRR<31, "rq.and", true>,
                  Sched<[WriteIALU, ReadIALU, ReadIALU]>;
-def ReitoQ_SLL  : RvInstReitoQAluRR<132, "rq.sll">,
+def ReitoQ_SLL  : RvInstReitoQAluRR<32, "rq.sll">,
                  Sched<[WriteShiftReg, ReadShiftReg, ReadShiftReg]>;
-def ReitoQ_SRL  : RvInstReitoQAluRR<133, "rq.srl">,
+def ReitoQ_SRL  : RvInstReitoQAluRR<33, "rq.srl">,
                  Sched<[WriteShiftReg, ReadShiftReg, ReadShiftReg]>;
-def ReitoQ_SRA  : RvInstReitoQAluRR<134, "rq.sra">,
+def ReitoQ_SRA  : RvInstReitoQAluRR<34, "rq.sra">,
                  Sched<[WriteShiftReg, ReadShiftReg, ReadShiftReg]>;
-def ReitoQ_SLT  : RvInstReitoQAluRR<135, "rq.slt">,
+def ReitoQ_SLT  : RvInstReitoQAluRR<35, "rq.slt">,
                  Sched<[WriteIALU, ReadIALU, ReadIALU]>;
-def ReitoQ_SLTU : RvInstReitoQAluRR<136, "rq.sltu">,
+def ReitoQ_SLTU : RvInstReitoQAluRR<36, "rq.sltu">,
                  Sched<[WriteIALU, ReadIALU, ReadIALU]>;
 
 /// RV64I instructions
-def ReitoQ_LWU   : RvInstReitoQLoadRI<137, "rq.lwu">, Sched<[WriteLDW, ReadMemBase]>;
-def ReitoQ_LD    : RvInstReitoQLoadRI<138, "rq.ld">, Sched<[WriteLDD, ReadMemBase]>;
-def ReitoQ_SD    : RvInstReitoQStoreRRI<139, "rq.sd">, Sched<[WriteSTD, ReadStoreData, ReadMemBase]>;
+def ReitoQ_LWU   : RvInstReitoQLoadRI<37, "rq.lwu">, Sched<[WriteLDW, ReadMemBase]>;
+def ReitoQ_LD    : RvInstReitoQLoadRI<38, "rq.ld">, Sched<[WriteLDD, ReadMemBase]>;
+def ReitoQ_SD    : RvInstReitoQStoreRRI<39, "rq.sd">, Sched<[WriteSTD, ReadStoreData, ReadMemBase]>;
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
-def ReitoQ_ADDIW : RVInstReitoQRawI<140, (outs GPR:$rd), (ins GPR:$rs1, simm12:$imm12),
+def ReitoQ_ADDIW : RVInstReitoQRawI<40, (outs GPR:$rd), (ins GPR:$rs1, simm12:$imm12),
                     "rq.addiw", "$rd, $rs1, $imm12">, Sched<[WriteIALU32, ReadIALU32]>;
 
-def ReitoQ_SLLIW : RvInstReitoQShiftWRI<141, "rq.slliw">;
-def ReitoQ_SRLIW : RvInstReitoQShiftWRI<142, "rq.srliw">;
-def ReitoQ_SRAIW : RvInstReitoQShiftWRI<143, "rq.sraiw">;
+def ReitoQ_SLLIW : RvInstReitoQShiftWRI<41, "rq.slliw">;
+def ReitoQ_SRLIW : RvInstReitoQShiftWRI<42, "rq.srliw">;
+def ReitoQ_SRAIW : RvInstReitoQShiftWRI<43, "rq.sraiw">;
 
-def ReitoQ_SLLW : RvInstReitoQAluWRR<144, "rq.sllw">,
+def ReitoQ_SLLW : RvInstReitoQAluWRR<44, "rq.sllw">,
                  Sched<[WriteShiftReg32, ReadShiftReg32, ReadShiftReg32]>;
-def ReitoQ_SRLW : RvInstReitoQAluWRR<145, "rq.srlw">,
+def ReitoQ_SRLW : RvInstReitoQAluWRR<45, "rq.srlw">,
                  Sched<[WriteShiftReg32, ReadShiftReg32, ReadShiftReg32]>;
-def ReitoQ_SRAW : RvInstReitoQAluWRR<146, "rq.sraw">,
+def ReitoQ_SRAW : RvInstReitoQAluWRR<46, "rq.sraw">,
                  Sched<[WriteShiftReg32, ReadShiftReg32, ReadShiftReg32]>;
-def ReitoQ_ADDW : RvInstReitoQAluWRR<147, "rq.addw", true>,
+def ReitoQ_ADDW : RvInstReitoQAluWRR<47, "rq.addw", true>,
                  Sched<[WriteIALU32, ReadIALU32, ReadIALU32]>;
-def ReitoQ_SUBW : RvInstReitoQAluWRR<148, "rq.subw">,
+def ReitoQ_SUBW : RvInstReitoQAluWRR<48, "rq.subw">,
                  Sched<[WriteIALU32, ReadIALU32, ReadIALU32]>;
 
 //===----------------------------------------------------------------------===//
