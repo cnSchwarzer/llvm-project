@@ -18,6 +18,7 @@
 #include "RISCVTargetObjectFile.h"
 #include "RISCVTargetTransformInfo.h"
 #include "TargetInfo/RISCVTargetInfo.h"
+#include "MCTargetDesc/RISCVReitoDesc.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/CodeGen/GlobalISel/IRTranslator.h"
@@ -37,6 +38,8 @@
 #include "llvm/Transforms/IPO.h"
 #include <optional>
 using namespace llvm;
+
+static reito::ReitoStub ReitoInitStub;
 
 static cl::opt<bool> EnableRedundantCopyElimination(
     "riscv-enable-copyelim",

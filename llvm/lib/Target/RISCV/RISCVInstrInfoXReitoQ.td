@@ -297,5 +297,3 @@ defm : ReitoQLdPat<load, ReitoQ_LD, i64>;
 
 defm : ReitoQStPat<truncstorei32, ReitoQ_SW, GPR, i64>;
 defm : ReitoQStPat<store, ReitoQ_SD, GPR, i64>;
-
-

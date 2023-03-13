@@ -2673,7 +2673,6 @@ static void initCommonOptions() {
   initWithColorOptions();
   initDebugOptions();
   initRandomSeedOptions();
-  initReitoOptions();
 }
 
 OptionCategory &cl::getGeneralCategory() {

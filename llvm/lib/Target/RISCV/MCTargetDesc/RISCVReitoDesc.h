@@ -17,11 +17,18 @@ namespace reito {
 
 void initReitoOptions();
 
+struct ReitoStub {
+  ReitoStub() {
+    initReitoOptions();
+  }
+};
+
 enum ReitoFormat {
   FormatInvalid = 0,
   FormatR = 1,
   FormatI,
-  FormatIS,
+  FormatIS5,
+  FormatIS6,
   FormatS,
   FormatB,
   FormatU,

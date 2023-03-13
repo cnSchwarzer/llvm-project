@@ -7,6 +7,7 @@
 #include "llvm/MC/MCInst.h"
 #include "llvm/MC/MCInstrInfo.h"
 #include "llvm/Support/CommandLine.h"
+#include "llvm/Support/FileSystem.h"
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -16,9 +17,13 @@ using namespace reito;
 namespace {
 // Global Instance
 RISCVReitoDesc ReitoDesc;
-}
 
-static cl::opt<std::string> OutputFilename("reito", cl::desc("Specify reito output filename"), cl::value_desc("filename"));
+cl::opt<std::string>* ReitoDescOutputFile = nullptr;
+} // namespace
+
+void reito::initReitoOptions() {
+  ReitoDescOutputFile = new cl::opt<std::string>("reito-desc", cl::desc("Specify reito desc output filename"), cl::value_desc("filename"));
+}
 
 RISCVReitoDesc *RISCVReitoDesc::get() { return &ReitoDesc; }
 
@@ -27,23 +32,25 @@ void RISCVReitoDesc::replaceOpcode(const MCInst &MI, uint64_t &Inst) {
 
   std::mt19937 Gen;
   auto IOp = MI.getOpcode();
-  //std::cout << MCII->getName(IOp).str() << std::endl;
+  // std::cout << MCII->getName(IOp).str() << std::endl;
 
   const MCInstrDesc &Desc = MCII->get(IOp);
-  auto ReitoFrm = (ReitoFormat) RISCVII::getReitoFormat(Desc.TSFlags);
-  auto ReitoInstr = (ReitoInst) RISCVII::getReitoInst(Desc.TSFlags);
+  auto ReitoFrm = (ReitoFormat)RISCVII::getReitoFormat(Desc.TSFlags);
+  auto ReitoInstr = (ReitoInst)RISCVII::getReitoInst(Desc.TSFlags);
 
   InstrCount[ReitoInstr]++;
   auto &Alias = InstrOpcodes[ReitoInstr];
 
   // Increase random space on demand
-  if (InstrCount[ReitoInstr] > Alias.size() * 2 && Opcodes.size() < ReitoInstOpcodeSize) {
-    std::uniform_int_distribution AliasDist((int)ReitoInstRandomBegin, (int)ReitoInstRandomEnd);
-regenerate:
+  if (InstrCount[ReitoInstr] > Alias.size() * 2 &&
+      Opcodes.size() < ReitoInstOpcodeSize) {
+    std::uniform_int_distribution AliasDist((int)ReitoInstRandomBegin,
+                                            (int)ReitoInstRandomEnd);
+  regenerate:
     auto AliasOp = (uint32_t)AliasDist(Gen);
     if (Opcodes.contains(AliasOp))
       goto regenerate;
-    //Add To Opcodes
+    // Add To Opcodes
     Opcodes[AliasOp] = {AliasOp, ReitoFrm, ReitoInstr};
     Alias.push_back(AliasOp);
   }
@@ -64,6 +71,9 @@ RISCVReitoDesc::RISCVReitoDesc() { init(); }
 RISCVReitoDesc::~RISCVReitoDesc() { save(); }
 
 void RISCVReitoDesc::save() {
+  if (!ReitoDescOutputFile || !ReitoDescOutputFile->hasArgStr())
+    return;
+
   auto Root = json::Object();
 
   auto OpcodesArray = json::Array();
@@ -79,11 +89,14 @@ void RISCVReitoDesc::save() {
 
   Root["opcodes"] = json::Value(std::move(OpcodesArray));
 
-  std::string Str;
-  raw_string_ostream Os(Str);
-  Os << std::move(Root);
+  std::error_code EC;
+  auto Fs = raw_fd_ostream(ReitoDescOutputFile->c_str(), EC,
+                           sys::fs::CreationDisposition::CD_CreateAlways);
+  if (EC) {
+    llvm_unreachable("Open reito desc file for writing failed!");
+  }
 
-  std::cout << Str;
+  Fs << std::move(Root);
 }
 
 void RISCVReitoDesc::init() {
@@ -94,7 +107,7 @@ void RISCVReitoDesc::init() {
     auto Name = MCII->getName(I);
     if (Name.starts_with("ReitoQ_")) {
       const MCInstrDesc &Desc = MCII->get(I);
-      auto ReitoFrm = (ReitoFormat) RISCVII::getReitoFormat(Desc.TSFlags);
+      auto ReitoFrm = (ReitoFormat)RISCVII::getReitoFormat(Desc.TSFlags);
       auto ReitoInstr = RISCVII::getReitoInst(Desc.TSFlags);
       Opcodes[ReitoInstr] = {ReitoInstr, ReitoFrm, (ReitoInst)ReitoInstr};
       InstrOpcodes[(ReitoInst)ReitoInstr].push_back(ReitoInstr);

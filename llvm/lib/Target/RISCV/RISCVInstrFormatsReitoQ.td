@@ -8,11 +8,12 @@ class ReitoFormat<bits<5> val> {
 def ReitoFormatInvalid : ReitoFormat<0>;
 def ReitoFormatR       : ReitoFormat<1>;
 def ReitoFormatI       : ReitoFormat<2>;
-def ReitoFormatIS      : ReitoFormat<3>;
-def ReitoFormatS       : ReitoFormat<4>;
-def ReitoFormatB       : ReitoFormat<5>;
-def ReitoFormatU       : ReitoFormat<6>;
-def ReitoFormatJ       : ReitoFormat<7>;
+def ReitoFormatIS5     : ReitoFormat<3>;
+def ReitoFormatIS6     : ReitoFormat<4>;
+def ReitoFormatS       : ReitoFormat<5>;
+def ReitoFormatB       : ReitoFormat<6>;
+def ReitoFormatU       : ReitoFormat<7>;
+def ReitoFormatJ       : ReitoFormat<8>;
 
 let Predicates = [HasVendorXReitoQ] in {
 class RVInstReitoQ : Instruction {
@@ -105,7 +106,7 @@ class RVInstReitoQRawI<bits<11> opcode, dag outs, dag ins, string opcodestr, str
 }
 
 class RVInstReitoQRawIShift<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<opcode, outs, ins, opcodestr, argstr, [], InstFormatI, ReitoFormatIS> {
+    : RVInst48<opcode, outs, ins, opcodestr, argstr, [], InstFormatI, ReitoFormatIS6> {
   bits<6> shamt; // Shift amount, in case you forgot it.
   bits<5> rs1;
   bits<5> rd;
@@ -119,7 +120,7 @@ class RVInstReitoQRawIShift<bits<11> opcode, dag outs, dag ins, string opcodestr
 }
 
 class RVInstReitoQRawIShiftW<bits<11> opcode, dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst48<opcode, outs, ins, opcodestr, argstr, [], InstFormatI, ReitoFormatIS> {
+    : RVInst48<opcode, outs, ins, opcodestr, argstr, [], InstFormatI, ReitoFormatIS5> {
   bits<5> shamt; // Shift amount, in case you forgot it.
   bits<5> rs1;
   bits<5> rd;
