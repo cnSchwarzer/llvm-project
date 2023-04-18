@@ -16,10 +16,14 @@ using namespace llvm;
 namespace reito {
 
 void initReitoOptions();
+void saveReitoFile();
 
 struct ReitoStub {
   ReitoStub() {
     initReitoOptions();
+  }
+  ~ReitoStub() {
+    saveReitoFile();
   }
 };
 
@@ -104,12 +108,9 @@ class RISCVReitoDesc {
   std::map<ReitoInst, uint32_t> InstrCount;
   std::mutex Lock;
 
+public:
   void save();
   void init();
-
-public:
-  RISCVReitoDesc();
-  ~RISCVReitoDesc();
   void replaceOpcode(const MCInst &MI, uint64_t& Inst);
 
 public:

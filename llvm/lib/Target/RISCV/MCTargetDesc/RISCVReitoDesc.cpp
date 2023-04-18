@@ -16,16 +16,24 @@ using namespace reito;
 
 namespace {
 // Global Instance
-RISCVReitoDesc ReitoDesc;
+RISCVReitoDesc* ReitoDesc = nullptr;
 
 cl::opt<std::string>* ReitoDescOutputFile = nullptr;
 } // namespace
 
 void reito::initReitoOptions() {
+  if (ReitoDesc == nullptr) {
+    ReitoDesc = new RISCVReitoDesc();
+    ReitoDesc->init();
+  }
   ReitoDescOutputFile = new cl::opt<std::string>("reito-desc", cl::desc("Specify reito desc output filename"), cl::value_desc("filename"));
 }
 
-RISCVReitoDesc *RISCVReitoDesc::get() { return &ReitoDesc; }
+void reito::saveReitoFile() {
+    ReitoDesc->save();
+}
+
+RISCVReitoDesc *RISCVReitoDesc::get() { return ReitoDesc; }
 
 void RISCVReitoDesc::replaceOpcode(const MCInst &MI, uint64_t &Inst) {
   Lock.lock();
@@ -42,18 +50,18 @@ void RISCVReitoDesc::replaceOpcode(const MCInst &MI, uint64_t &Inst) {
   auto &Alias = InstrOpcodes[ReitoInstr];
 
   // Increase random space on demand
-  if (InstrCount[ReitoInstr] > Alias.size() * 2 &&
-      Opcodes.size() < ReitoInstOpcodeSize) {
-    std::uniform_int_distribution AliasDist((int)ReitoInstRandomBegin,
-                                            (int)ReitoInstRandomEnd);
-  regenerate:
-    auto AliasOp = (uint32_t)AliasDist(Gen);
-    if (Opcodes.contains(AliasOp))
-      goto regenerate;
-    // Add To Opcodes
-    Opcodes[AliasOp] = {AliasOp, ReitoFrm, ReitoInstr};
-    Alias.push_back(AliasOp);
-  }
+//  if (InstrCount[ReitoInstr] > Alias.size() * 2 &&
+//      Opcodes.size() < ReitoInstOpcodeSize) {
+//    std::uniform_int_distribution AliasDist((int)ReitoInstRandomBegin,
+//                                            (int)ReitoInstRandomEnd);
+//  regenerate:
+//    auto AliasOp = (uint32_t)AliasDist(Gen);
+//    if (Opcodes.contains(AliasOp))
+//      goto regenerate;
+//    // Add To Opcodes
+//    Opcodes[AliasOp] = {AliasOp, ReitoFrm, ReitoInstr};
+//    Alias.push_back(AliasOp);
+//  }
 
   if (Alias.size() > 0) {
     std::uniform_int_distribution AliasDist(0, (int)Alias.size() - 1);
@@ -65,10 +73,6 @@ void RISCVReitoDesc::replaceOpcode(const MCInst &MI, uint64_t &Inst) {
 
   Lock.unlock();
 }
-
-RISCVReitoDesc::RISCVReitoDesc() { init(); }
-
-RISCVReitoDesc::~RISCVReitoDesc() { save(); }
 
 void RISCVReitoDesc::save() {
   if (!ReitoDescOutputFile || !ReitoDescOutputFile->hasArgStr())
@@ -88,6 +92,9 @@ void RISCVReitoDesc::save() {
   }
 
   Root["opcodes"] = json::Value(std::move(OpcodesArray));
+
+  if (ReitoDescOutputFile->empty())
+    return;
 
   std::error_code EC;
   auto Fs = raw_fd_ostream(ReitoDescOutputFile->c_str(), EC,

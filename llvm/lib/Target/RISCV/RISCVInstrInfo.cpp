@@ -734,16 +734,22 @@ static RISCVCC::CondCode getCondFromBranchOpc(unsigned Opc) {
   default:
     return RISCVCC::COND_INVALID;
   case RISCV::BEQ:
+  case RISCV::ReitoQ_BEQ:
     return RISCVCC::COND_EQ;
   case RISCV::BNE:
+  case RISCV::ReitoQ_BNE:
     return RISCVCC::COND_NE;
   case RISCV::BLT:
+  case RISCV::ReitoQ_BLT:
     return RISCVCC::COND_LT;
   case RISCV::BGE:
+  case RISCV::ReitoQ_BGE:
     return RISCVCC::COND_GE;
   case RISCV::BLTU:
+  case RISCV::ReitoQ_BLTU:
     return RISCVCC::COND_LTU;
   case RISCV::BGEU:
+  case RISCV::ReitoQ_BGEU:
     return RISCVCC::COND_GEU;
   }
 }
@@ -1036,8 +1042,15 @@ bool RISCVInstrInfo::isBranchOffsetInRange(unsigned BranchOp,
   case RISCV::BGE:
   case RISCV::BLTU:
   case RISCV::BGEU:
+  case RISCV::ReitoQ_BEQ:
+  case RISCV::ReitoQ_BNE:
+  case RISCV::ReitoQ_BLT:
+  case RISCV::ReitoQ_BGE:
+  case RISCV::ReitoQ_BLTU:
+  case RISCV::ReitoQ_BGEU:
     return isIntN(13, BrOffset);
   case RISCV::JAL:
+  case RISCV::ReitoQ_JAL:
   case RISCV::PseudoBR:
     return isIntN(21, BrOffset);
   case RISCV::PseudoJump:
